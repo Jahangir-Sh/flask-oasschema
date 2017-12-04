@@ -105,6 +105,10 @@ def validate_request():
             uri_path = request.url_rule.rule.replace("<", "{").replace(">", "}")
             method = request.method.lower()
             schema = current_app.extensions['oas_schema']
+            base_path = schema.get('basePath')
+
+            if all([base_path, request.blueprint]) and uri_path.find(base_path) == 0:
+                uri_path = uri_path[len(base_path):]
 
             if method == 'get':
                 query = dict(parse_qsl(request.query_string))

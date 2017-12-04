@@ -3,13 +3,15 @@ import unittest
 
 import simplejson as json
 
-from flask import Flask
+from flask import Flask, Blueprint
 from flask_oasschema import OASSchema, validate_request, ValidationError
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['OAS_FILE'] = os.path.join(app.root_path, 'schemas', 'oas.json')
 jsonschema = OASSchema(app)
+
+mod = Blueprint('store', __name__)
 
 
 @app.route('/books/<isbn>', methods=['PUT'])
@@ -30,9 +32,18 @@ def books_get_title():
     return 'success'
 
 
+@mod.route('/authors', methods=['GET'])
+@validate_request()
+def authors():
+    return 'success'
+
+
 @app.errorhandler(ValidationError)
 def on_error(e):
     return 'error'
+
+
+app.register_blueprint(mod, url_prefix='/store')
 
 client = app.test_client()
 
@@ -81,5 +92,11 @@ class JsonSchemaTests(unittest.TestCase):
     def test_no_param_get(self):
         r = client.get(
             '/books/by-author'
+        )
+        self.assertIn(b'success', r.data)
+
+    def test_valid_blueprint_route(self):
+        r = client.get(
+            '/store/authors'
         )
         self.assertIn(b'success', r.data)

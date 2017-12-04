@@ -5,11 +5,18 @@
     "title": "json_oasschema",
     "description": "Example Schema for json_oasschema"
   },
+  "basePath": "/store",
   "paths": {
     "/books/{isbn}": {
       "put": {
         "operationId": "PUT_book",
         "parameters": [
+          {
+            "name": "isbn",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
           {
             "name": "body",
             "in": "body",
@@ -56,6 +63,17 @@
             "type": "string"
           }
         ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/authors": {
+      "get": {
+        "operationId": "GET_authors",
         "responses": {
           "default": {
             "description": "",
